@@ -1,45 +1,44 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { Form, Button, Card } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
 
-function TodoForm (props) {
+function TodoForm(props) {
 
- const [item, setItem] = useState({difficulty:"1"})
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const onSubmit = data => console.log(data);
+  console.log(errors);
 
-  const handleInputChange = e => {
-    setItem({...item, [e.target.name]: e.target.value });
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    e.target.reset();
-    props.handleSubmit(item);
-    const tempItem = {difficulty:"1"};
-    setItem(tempItem);
-  };
 
-    return (
-      <>
-        <h3>Add Item</h3>
-        <form onSubmit={handleSubmit}>
-          <label>
-            <span>To Do Item</span>
-            <input
-              name="text"
-              placeholder="Add To Do List Item"
-              onChange={handleInputChange}
-            />
-          </label>
-          <label>
-            <span>Difficulty Rating</span>
-            <input defaultValue="1" type="range" min="1" max="5" name="difficulty" onChange={handleInputChange} />
-          </label>
-          <label>
-            <span>Assigned To</span>
-            <input type="text" name="assignee" placeholder="Assigned To" onChange={handleInputChange} />
-          </label>
-          <button>Add Item</button>
-        </form>
-      </>
-    );
+  return (
+    <>
+      <Card style={{ width: '22rem', height: '28rem' }}>
+        
+       <Card.Body>
+         <header> <strong>Add To Do Item</strong></header>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group controlId="todoList">
+            <Form.Label><strong>To Do Item</strong> </Form.Label>
+            <Form.Control type="text" placeholder="Item Details" {...register("todoItem", { required: true })} />
+          </Form.Group>
+
+          <Form.Group controlId="formTodo">
+            <Form.Label><strong>Assigned To</strong></Form.Label>
+            <Form.Control type="text" placeholder="Assignee Name" {...register("assignee", { required: true })} />
+          </Form.Group>
+
+          <Form.Group controlId="formBasicRange">
+            <Form.Label><strong>Difficulty</strong></Form.Label>
+            <Form.Control type="range" min="1" max="5" {...register("difficultyrange", { required: true })} />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Add Item
+  </Button>
+        </Form>
+      </Card.Body>
+      </Card>
+    </>
+  );
 }
 
 export default TodoForm;
