@@ -4,9 +4,14 @@ import { useForm } from 'react-hook-form'
 
 function TodoForm(props) {
 
+  const [item, setItem] = useState({})
+
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const onSubmit = data => console.log(data);
-  console.log(errors);
+
+  const onSubmit = data => {
+    props.handleSubmit(data);
+    console.log({errors})
+}
 
 
 
@@ -19,7 +24,7 @@ function TodoForm(props) {
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group controlId="todoList">
             <Form.Label><strong>To Do Item</strong> </Form.Label>
-            <Form.Control type="text" placeholder="Item Details" {...register("todoItem", { required: true })} />
+            <Form.Control type="text" placeholder="Item Details" {...register("text", { required: true })} />
           </Form.Group>
 
           <Form.Group controlId="formTodo">
@@ -29,7 +34,7 @@ function TodoForm(props) {
 
           <Form.Group controlId="formBasicRange">
             <Form.Label><strong>Difficulty</strong></Form.Label>
-            <Form.Control type="range" min="1" max="5" {...register("difficultyrange", { required: true })} />
+            <Form.Control type="range" min="1" max="5" {...register("difficulty", { required: true })} />
           </Form.Group>
           <Button variant="primary" type="submit">
             Add Item

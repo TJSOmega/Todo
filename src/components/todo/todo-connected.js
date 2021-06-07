@@ -1,35 +1,39 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col } from "react-bootstrap"
 import TodoForm from './form.js';
 import TodoList from './list.js';
 
 import './todo.scss';
 
+import axios from 'axios'
+
+
 const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
 
-
+// Need to figure out how to post to the API and also Delete.
 const ToDo = () => {
 
   const [list, setList] = useState([]);
+  const [listCount, setListCount] = useState(0);
 
-  const _addItem = (item) => {
+  const _addItem = async (item) => {
     item.due = new Date();
-    fetch(todoAPI, {
-      method: 'post',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item)
-    })
-      .then(response => response.json())
-      .then(savedItem => {
-        setList([...list, savedItem])
-      })
-      .catch(console.error);
+    try {
+      const response = await axios.post(todoAPI, item)
+      console.log(response.data)
+      setList([...list, response.data])
+    } catch(e) {
+      console.log(e)
+    }
   };
 
-  const _toggleComplete = id => {
+  const _toggleComplete = async id => {
+
+    console.log(id)
 
     let item = list.filter(i => i._id === id)[0] || {};
+
+    console.log(item)
 
     if (item._id) {
 
@@ -37,54 +41,54 @@ const ToDo = () => {
 
       let url = `${todoAPI}/${id}`;
 
-      fetch(url, {
-        method: 'put',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      })
-        .then(response => response.json())
-        .then(savedItem => {
-          setList(list.map(listItem => listItem._id === item._id ? savedItem : listItem));
-        })
-        .catch(console.error);
+      try {
+        const response = await axios.put(url, item);
+
+        setList(list.map(listItem => listItem._id === item._id ? response.data : listItem))
+      } catch(e) {
+        console.log(e)
+      }
     }
   };
 
-  const _getTodoItems = () => {
-    fetch(todoAPI, {
-      method: 'get',
-      mode: 'cors',
-    })
-      .then(data => data.json())
-      .then(data => setList(data.results))
-      .catch(console.error);
-  };
+  
+  
 
-  useEffect(_getTodoItems, []);
 
+  const _deleteItem = async (id) => {
+
+    let url = `${todoAPI}/${id}`;
+    const response = await axios.delete(url)
+    setList(list.filter(newListItem => newListItem._id !== response.data._id))
+  }
+
+  useEffect( async () => {
+    const response = await axios.get(todoAPI)
+    const primaryList = response.data.results
+    setList(primaryList)
+  }, [])
+
+  useEffect( () => {
+    let count = list.filter((item) => !item.complete).length;
+    setListCount(count)
+  }, [list])
   return (
     <>
       <header>
         <h2>
-          There are {list.filter(item => !item.complete).length} Items To Complete
+          To Do List Manager ({listCount})
         </h2>
       </header>
-
-      <section className="todo">
-
-        <div>
-          <TodoForm handleSubmit={_addItem} />
-        </div>
-
-        <div>
-          <TodoList
+      <Container className="todo">
+        <Row>
+          <Col><TodoForm handleSubmit={_addItem} /></Col>
+          <Col xs={7}><TodoList
             list={list}
             handleComplete={_toggleComplete}
-          />
-        </div>
-      </section>
+            handleDelete={_deleteItem}
+          /></Col>
+        </Row>
+      </Container>
     </>
   );
 };
