@@ -5,8 +5,8 @@
 
 ### Description: This is a Todo application that allows you to add items to your list and check them off as they are finished.
 
-### Languages:
-JavaScript(React), Scss, Bootstrap,
+### Languages and Tools:
+JavaScript(React), Scss, Bootstrap, Axios, react-hook-form
 
 ### UML:
 ![Todo App UML](assets/TodoAppUML.jpg)
