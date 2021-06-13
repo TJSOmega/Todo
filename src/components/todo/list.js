@@ -4,7 +4,7 @@ import { Row, Col, Toast, Button, Badge } from 'react-bootstrap'
 
 function TodoList(props) {
 
-  console.log(props.list)
+
   // Need to update so that Badges can be changed as well as so that hitting x on an item removes it from the Database instead of hiding all items.
 
 
